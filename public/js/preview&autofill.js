@@ -2,60 +2,54 @@ const fileInput = document.getElementById('tenant_file');
 const filePreview = document.getElementById('filePreview');
 const confirmUpload = document.getElementById('confirmUpload');
 const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
-const docTypeInput = document.getElementById('document_type');
-const docTypeHidden = document.getElementById('document_type_hidden');
+const documentTypeDropdown = document.getElementById('document_type');
+const documentTypeHidden = document.getElementById('document_type_hidden');
 const tenantFileBase64 = document.getElementById('tenant_file_base64');
 
-let previewCanvas = null;
+fileInput.addEventListener('change', previewFile);
+confirmUpload.addEventListener('click', scanAndAutofill);
 
-fileInput.addEventListener('change', handleFile);
-confirmUpload.addEventListener('click', handleOCR);
-
-function handleFile() {
+function previewFile() {
     const file = fileInput.files[0];
     if (!file) return;
 
     filePreview.innerHTML = '';
-    docTypeHidden.value = docTypeInput.value;
+    documentTypeHidden.value = documentTypeDropdown.value;
 
-    // Check if the file is PDF
+    const reader = new FileReader();
     if (file.type === 'application/pdf') {
-        const reader = new FileReader();
-        reader.onload = e => {
-            const typedarray = new Uint8Array(e.target.result);
-            pdfjsLib.getDocument({ data: typedarray }).promise.then(pdf => pdf.getPage(1))
-            .then(page => {
-                const viewport = page.getViewport({ scale: 1.5 });
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-                page.render({ canvasContext: ctx, viewport }).promise.then(() => {
-                    filePreview.appendChild(canvas);
-                    previewCanvas = canvas;
-                    tenantFileBase64.value = canvas.toDataURL('image/jpeg', 0.8);
-                    previewModal.show();
+        reader.onload = function () {
+            const typedarray = new Uint8Array(this.result);
+            pdfjsLib.getDocument({ data: typedarray }).promise
+                .then(pdf => pdf.getPage(1))
+                .then(page => {
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    return page.render({ canvasContext: context, viewport }).promise.then(() => {
+                        filePreview.appendChild(canvas);
+                        tenantFileBase64.value = canvas.toDataURL();
+                        previewModal.show();
+                    });
                 });
-            });
         };
         reader.readAsArrayBuffer(file);
-    }
-    // Check if the file is an image
-    else if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = e => {
+    } else if (file.type.startsWith('image/')) {
+        reader.onload = function (e) {
             const img = new Image();
             img.src = e.target.result;
-            img.onload = () => {
+            img.onload = function () {
                 const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
+                const picaInstance = window.pica();
                 canvas.width = img.width;
                 canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                filePreview.appendChild(canvas);
-                previewCanvas = canvas;
-                tenantFileBase64.value = canvas.toDataURL('image/jpeg', 0.8);
-                previewModal.show();
+                picaInstance.resize(img, canvas).then(() => {
+                    filePreview.appendChild(canvas);
+                    tenantFileBase64.value = canvas.toDataURL();
+                    previewModal.show();
+                });
             };
         };
         reader.readAsDataURL(file);
@@ -65,56 +59,84 @@ function handleFile() {
     }
 }
 
-async function handleOCR() {
-    if (!previewCanvas) return alert('No document loaded.');
+function scanAndAutofill() {
+    const base64Image = tenantFileBase64.value;
+    if (!base64Image) {
+        alert('No image available to scan.');
+        return;
+    }
 
     confirmUpload.disabled = true;
-    confirmUpload.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Scanning...';
+    confirmUpload.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
 
-    const resizedCanvas = document.createElement('canvas');
-    await pica().resize(previewCanvas, resizedCanvas, { width: 1000 });
+    Tesseract.recognize(base64Image, 'eng', {
+        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@. ',
+    }).then(({ data: { text, blocks } }) => {
+        let detectedDocumentType = '';
 
-    Tesseract.recognize(resizedCanvas, 'eng', {
-        logger: m => console.log(m)  // For debugging progress
-    }).then(({ data: { text } }) => {
-        console.log('OCR TEXT:', text);  // Debug the OCR result
-        autofillForm(text);  // Autofill the form with the OCR result
+        for (const block of blocks) {
+            if (block.confidence > 80) {
+                if (/(?:National\s?ID|NID|ID\s?Number)/i.test(block.text)) {
+                    detectedDocumentType = 'NID';
+                    break;
+                }
+                if (/(?:Passport\s?No\.?|Document\s?No\.?)/i.test(block.text)) {
+                    detectedDocumentType = 'Passport';
+                    break;
+                }
+            }
+        }
+
+        fillFormFromText(text);
+
+        if (detectedDocumentType) {
+            documentTypeDropdown.value = detectedDocumentType;
+            documentTypeHidden.value = detectedDocumentType;
+        }
+
         previewModal.hide();
-
-        // Submit the form if autofill is successful
-        document.querySelector('form').submit();
     }).catch(err => {
         console.error('OCR Error:', err);
-        alert('Failed to read text. Please try again.');
+        alert('Failed to extract text. Please fill manually.');
     }).finally(() => {
         confirmUpload.disabled = false;
         confirmUpload.innerHTML = 'Upload & Autofill';
     });
 }
 
-function autofillForm(text) {
-    console.log("Autofill text:", text);  // Check the text being passed to the autofill
-
-    const fields = {
-        name: /(?:Full\s*Name|Name)[:\-]?\s*(.+)/i,
-        id_number: /(?:ID\s*Number|NID|National\s*ID|Passport\s*No.)[:\-]?\s*([A-Z0-9]+)/i,
-        phone: /(?:Phone|Mobile)[:\-]?\s*(\+?\d{6,})/i,
-        father_name: /(?:Father['’]?s?\s*Name)[:\-]?\s*(.+)/i,
-        mother_name: /(?:Mother['’]?s?\s*Name)[:\-]?\s*(.+)/i,
-        spouse_name: /(?:Spouse|Husband|Wife)[:\-]?\s*(.+)/i,
-        email: /(?:Email|E-mail)[:\-]?\s*([\w\.-]+@[\w\.-]+\.\w+)/i,
-        address: /(?:Permanent\s*Address|Present\s*Address)[:\-]?\s*(.+)/i
+function fillFormFromText(text) {
+    const patterns = {
+        name: /(?:Name|Full Name|Name of Holder)[:=\-]?\s*([^\n]+)/i,
+        id_number: /(?:Passport\s?(?:No\.?|Number)|PP\s?No\.?|Document\s?No\.?|PassportNumber)[:=\-\s]*([A-Z0-9]{7,15})/i,
+        father_name: /(?:Father[']?s? Name|Father)[:=\-]?\s*([^\n]+)/i,
+        mother_name: /(?:Mother[']?s? Name|Mother)[:=\-]?\s*([^\n]+)/i,
+        spouse_name: /(?:Spouse|Husband|Wife)[:=\-]?\s*([^\n]+)/i,
+        address: /(?:Permanent Address|Present Address|Address)[:=\-]?\s*([^\n]+)/i
     };
 
-    // Loop over the fields and check if we find matches in the OCR text
-    for (const id in fields) {
-        const regex = fields[id];
+    const lowerText = text.toLowerCase();
+    let documentType = '';
+
+    if (lowerText.includes('passport') && lowerText.includes('no') || lowerText.includes('passportnumber')) {
+        documentType = 'passport';
+    } else if (lowerText.includes('national id') || lowerText.includes('nid') || lowerText.includes('national identification')) {
+        documentType = 'nid';
+    }
+
+    console.log('Detected Document Type:', documentType);
+
+    for (const [field, regex] of Object.entries(patterns)) {
         const match = text.match(regex);
-        if (match && match[1]) {
-            const element = document.getElementById(id);
-            if (element) {
-                element.value = match[1].trim();
+        if (match) {
+            const fieldElement = document.getElementById(field);
+            if (fieldElement) {
+                fieldElement.value = match[1].trim();
             }
         }
+    }
+
+    if (documentType) {
+        documentTypeDropdown.value = documentType;
+        documentTypeHidden.value = documentType;
     }
 }

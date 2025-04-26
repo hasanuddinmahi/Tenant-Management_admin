@@ -19,13 +19,16 @@
                                     <option value="passport">Passport</option>
                                 </select>
                             </div>
+                            <!-- Hidden input to store the document type -->
+                            <input type="hidden" id="document_type_hidden" name="document_type_hidden">
+
                             <div class="mb-3">
-                                <input type="file" class="form-control" id="tenant_file"
-                                    accept=".jpg,.jpeg,.png,.pdf" required>
+                                <input type="file" class="form-control" id="tenant_file" accept=".jpg,.jpeg,.png,.pdf" required>
                             </div>
                         </form>
                     </div>
                 </div>
+
 
                 {{-- Tenant Form Section --}}
                 <div class="card shadow-sm">
@@ -90,7 +93,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
-                    <div id="filePreview"></div>
+                    <div id="filePreview" class="w-100"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -99,6 +102,20 @@
             </div>
         </div>
     </div>
+
+    {{-- Styles for preview --}}
+    <style>
+        #filePreview canvas, #filePreview img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        #filePreview {
+            overflow-x: auto;
+        }
+    </style>
+
 </x-layout>
 
 {{-- Libraries --}}
@@ -108,4 +125,3 @@
 
 {{-- Custom Scripts --}}
 <script src="{{ asset('js/preview&autofill.js') }}"></script>
-
