@@ -2,55 +2,49 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Tenant;
+use Illuminate\Http\Request;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Str;
 
 class TenantController extends Controller
 {
+    /**
+     * Display a listing of tenants.
+     */
     public function index()
     {
-        // Fetch all tenants from the database
-        $tenants = Tenant::latest()->get(); // latest() will sort newest first
-
-        // Return the view and pass the tenants data
+        $tenants = Tenant::latest()->get();
         return view('tenant.index', compact('tenants'));
     }
 
+    public function create()
+    {
+        return view('tenant.create');
+    }
+
+    /**
+     * Store a newly created tenant in storage.
+     */
     public function store(Request $request)
     {
-        // Validate the incoming request
         $request->validate([
             'name' => 'required|string|max:255',
             'id_number' => 'required|string|max:255',
             'address' => 'required|string',
             'document_type' => 'required|string|in:nid,passport',
             'tenant_file_base64' => 'required|string',
-
-            // Ensure either phone or email is required
-            'phone' => 'required_without:email|string|max:20',
-            'email' => 'required_without:phone|email|max:255',
-
-            // Ensure that at least one of father's name, mother's name, or spouse's name is required
+            'phone' => 'nullable|required_without:email|string|max:20',
+            'email' => 'nullable|required_without:phone|email|max:255',
             'father_name' => 'nullable|string|max:255|required_without_all:mother_name,spouse_name',
             'mother_name' => 'nullable|string|max:255|required_without_all:father_name,spouse_name',
             'spouse_name' => 'nullable|string|max:255|required_without_all:father_name,mother_name',
-
-
         ]);
 
-        // Handle file saving
-        $fileData = $request->tenant_file_base64;
-        $fileName = 'tenant_files/' . uniqid() . '.' . $this->getFileExtension($fileData);
+        // Upload file to Cloudinary
+        $uploadedFileUrl = $this->uploadBase64ToCloudinary($request->tenant_file_base64);
 
-        Storage::disk('public')->put($fileName, base64_decode($this->getBase64Data($fileData)));
-
-        // Check if the file was saved successfully
-        if (!Storage::disk('public')->exists($fileName)) {
-            return response()->json(['error' => 'File upload failed'], 500);
-        }
-
-        // Create tenant
+        // Save tenant with uploaded document URL
         $tenant = Tenant::create([
             'name' => $request->name,
             'id_number' => $request->id_number,
@@ -61,28 +55,62 @@ class TenantController extends Controller
             'email' => $request->email,
             'address' => $request->address,
             'document_type' => $request->document_type,
-            'document_path' => $fileName,
+            'document_path' => $uploadedFileUrl,
         ]);
 
         return redirect()->route('tenant.index')->with('success', 'Tenant added successfully!');
     }
 
-
-    private function getFileExtension($base64Data)
+    public function show($id)
     {
-        if (str_contains($base64Data, 'image/jpeg')) {
-            return 'jpg';
-        } elseif (str_contains($base64Data, 'image/png')) {
-            return 'png';
-        } elseif (str_contains($base64Data, 'application/pdf')) {
-            return 'pdf';
-        }
+        // Retrieve the tenant by ID or fail with a 404 error
+        $tenant = Tenant::findOrFail($id);
 
-        return 'bin'; // fallback
+        // Return the view with the tenant data
+        return view('tenant.show', compact('tenant'));
     }
 
-    private function getBase64Data($base64Data)
+    /**
+     * Uploads a base64 encoded file to Cloudinary.
+     */
+    private function uploadBase64ToCloudinary(string $base64Data): string
     {
-        return preg_replace('/^data:.*;base64,/', '', $base64Data);
+        $decodedData = base64_decode($this->extractBase64Content($base64Data));
+
+        if ($decodedData === false) {
+            throw new \Exception('Invalid base64 data.');
+        }
+
+        // Save the decoded file temporarily
+        $tmpFile = tempnam(sys_get_temp_dir(), 'cloudinary_');
+        file_put_contents($tmpFile, $decodedData);
+
+        try {
+            $response = Cloudinary::upload($tmpFile, [
+                'folder' => 'tenant-management/tenant_info',
+                'resource_type' => 'auto',
+                'public_id' => Str::uuid()->toString(), // unique ID for each file
+            ]);
+        } finally {
+            @unlink($tmpFile); // Always clean up temp file
+        }
+
+        if (!$response || !$response->getSecurePath()) {
+            throw new \Exception('Cloudinary upload failed.');
+        }
+
+        return $response->getSecurePath();
+    }
+
+    /**
+     * Extracts only the base64 part from a full data URL.
+     */
+    private function extractBase64Content(string $base64String): string
+    {
+        if (preg_match('/^data:.*?;base64,(.*)$/', $base64String, $matches)) {
+            return $matches[1];
+        }
+
+        return $base64String;
     }
 }

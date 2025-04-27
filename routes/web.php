@@ -37,7 +37,6 @@ Route::get('/maintenance', function(){
 
 
 Route::get('/tenant', [TenantController::class, 'index'])->name('tenant.index');
-Route::get('/tenant/create', function(){
-    return view('tenant.create');
-});
+Route::get('/tenant/create', [TenantController::class, 'create'])->name('tenant.create');
 Route::post('/tenant', [TenantController::class, 'store'])->name('tenants.store');
+Route::get('/tenants/{id}', [TenantController::class, 'show'])->name('tenant.show');

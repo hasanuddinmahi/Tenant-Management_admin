@@ -26,7 +26,7 @@
                     @foreach ($tenants as $tenant)
                         <tr>
                             <td>{{ $loop->iteration }}</td> {{-- This shows the index --}}
-                            <td><a href="#">{{ $tenant->name }}</a></td>
+                            <td><a href="{{ route('tenant.show', $tenant->id) }}">{{ $tenant->name }}</a></td>
                             <td>{{ $tenant->phone }}</td>
                             <td>{{ $tenant->email }}</td>
                             <td>{{ $tenant->rent_amount ?? 'N/A' }}</td> {{-- Assuming rent_amount is part of your model --}}
