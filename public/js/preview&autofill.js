@@ -10,18 +10,6 @@ const fileError = document.getElementById('tenant_file_error'); // Error message
 fileInput.addEventListener('change', previewFile);
 confirmUpload.addEventListener('click', scanAndAutofill);
 
-
-// Show error if no file is selected on form submission
-document.getElementById('uploadForm').addEventListener('submit', function (e) {
-    if (!fileInput.files || fileInput.files.length === 0) {
-        e.preventDefault(); // Prevent form submission
-        fileError.style.display = 'block'; // Show error message
-    } else {
-        fileError.style.display = 'none'; // Hide error if file is selected
-    }
-
-});
-
 function previewFile() {
     const file = fileInput.files[0];
     if (!file) return;

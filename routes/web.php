@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TenantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,15 +26,18 @@ Route::get('/findme', function(){
 Route::get('/booking', function(){
     return view('content.booking');
 });
-Route::get('/tenant', function(){
-    return view('content.tenant.tenant');
-});
-Route::get('/tenant/create', function(){
-    return view('content.tenant.addtenant');
-});
+
+
 Route::get('/apartment', function(){
     return view('content.apartment');
 });
 Route::get('/maintenance', function(){
     return view('content.maintenance');
 });
+
+
+Route::get('/tenant', [TenantController::class, 'index'])->name('tenant.index');
+Route::get('/tenant/create', function(){
+    return view('tenant.create');
+});
+Route::post('/tenant', [TenantController::class, 'store'])->name('tenants.store');
