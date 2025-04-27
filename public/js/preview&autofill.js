@@ -5,9 +5,22 @@ const previewModal = new bootstrap.Modal(document.getElementById('previewModal')
 const documentTypeDropdown = document.getElementById('document_type');
 const documentTypeHidden = document.getElementById('document_type_hidden');
 const tenantFileBase64 = document.getElementById('tenant_file_base64');
+const fileError = document.getElementById('tenant_file_error'); // Error message element
 
 fileInput.addEventListener('change', previewFile);
 confirmUpload.addEventListener('click', scanAndAutofill);
+
+
+// Show error if no file is selected on form submission
+document.getElementById('uploadForm').addEventListener('submit', function (e) {
+    if (!fileInput.files || fileInput.files.length === 0) {
+        e.preventDefault(); // Prevent form submission
+        fileError.style.display = 'block'; // Show error message
+    } else {
+        fileError.style.display = 'none'; // Hide error if file is selected
+    }
+
+});
 
 function previewFile() {
     const file = fileInput.files[0];
@@ -100,7 +113,7 @@ function scanAndAutofill() {
         alert('Failed to extract text. Please fill manually.');
     }).finally(() => {
         confirmUpload.disabled = false;
-        confirmUpload.innerHTML = 'Upload & Autofill';
+        confirmUpload.innerHTML = 'Upload';
     });
 }
 
