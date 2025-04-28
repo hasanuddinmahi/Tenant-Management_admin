@@ -42,3 +42,4 @@ Route::post('/tenant', [TenantController::class, 'store'])->name('tenants.store'
 Route::get('/tenants/{id}', [TenantController::class, 'show'])->name('tenant.show');
 Route::get('tenants/{tenant}/edit', [TenantController::class, 'edit'])->name('tenant.edit');
 Route::put('tenants/{tenant}', [TenantController::class, 'update'])->name('tenant.update');
+Route::delete('tenants/{tenant}', [TenantController::class, 'destroy'])->name('tenant.destroy');

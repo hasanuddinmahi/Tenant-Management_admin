@@ -26,7 +26,7 @@ return new class extends Migration
                 $table->string('document_type'); // nid or passport
                 $table->string('document_path'); // saved file path
                 $table->timestamps();
-
+                $table->softDeletes();
         });
     }
 

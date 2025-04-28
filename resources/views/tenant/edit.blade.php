@@ -23,8 +23,7 @@
                                 @if ($tenant->document_path)
                                     <div class="mt-2">
                                         <a href="{{ asset($tenant->document_path) }}" target="_blank"
-                                            class="btn btn-sm btn-outline-primary rounded-pill">📄 View Stored
-                                            Document</a>
+                                            class="btn btn-sm btn-outline-primary rounded-pill">📄 View Stored Document</a>
                                     </div>
                                 @endif
                             </div>
@@ -140,11 +139,10 @@
                             </div>
 
                             <div class="col-12 mt-3">
-                                <button type="submit" class="btn btn-primary w-100">Update Tenant</button>
+                                @method('PUT')
+                                <button type="submit" class="btn btn-primary w-100" id="updateTenantButton">Update Tenant</button>
                             </div>
                         </div>
-
-                        </form>
                     </div>
                 </div>
 
@@ -173,5 +171,30 @@
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pica@9.0.1/dist/pica.min.js"></script>
 
-{{-- Custom Scripts --}}
-<script src="{{ asset('js/preview&autofill.js') }}"></script>
+{{-- SweetAlert2 CSS --}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.8/dist/sweetalert2.min.css">
+
+{{-- SweetAlert2 JS --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.8/dist/sweetalert2.all.min.js"></script>
+
+<script>
+    document.getElementById('updateTenantButton').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent form submission
+
+        // SweetAlert2 Confirmation Popup
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to update this tenant?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, update it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form if confirmed
+                document.getElementById('uploadForm').submit();
+            }
+        });
+    });
+</script>

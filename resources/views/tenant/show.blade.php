@@ -1,4 +1,20 @@
 <x-layout>
+
+    @if (session('success'))
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: '{{ session('success') }}',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+    </script>
+@endif
+
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-12 col-md-10 col-lg-8">
@@ -6,6 +22,7 @@
                 <div class="card shadow rounded-4 border-0">
                     <div class="card-body p-5">
 
+                        {{-- Title --}}
                         <h2 class="text-center fw-bold text-primary mb-5">Tenant Details</h2>
 
                         {{-- Tabs --}}
@@ -26,6 +43,7 @@
                             </li>
                         </ul>
 
+                        {{-- Tabs Content --}}
                         <div class="tab-content" id="tenantTabsContent">
                             {{-- Info Tab --}}
                             <div class="tab-pane fade show active" id="info" role="tabpanel"
@@ -46,7 +64,7 @@
                                     @endphp
 
                                     @foreach ($fields as $label => $value)
-                                        <div class="col-sm-{{ in_array($label, ['Address']) ? '12' : '6' }}">
+                                        <div class="col-12 col-sm-6">
                                             <div class="mb-1 fw-semibold">{{ $label }}:</div>
                                             <div class="text-muted">{{ $value ?: '-' }}</div>
                                         </div>
@@ -101,17 +119,29 @@
                         {{-- Action Buttons --}}
                         <div class="mt-5">
                             <div class="d-flex flex-column flex-md-row gap-3">
+                                {{-- Back --}}
                                 <a href="{{ route('tenant.index') }}" class="btn btn-secondary w-100 rounded-pill">
                                     ← Back to Tenants
                                 </a>
 
+                                {{-- Edit --}}
                                 <a href="{{ route('tenant.edit', $tenant->id) }}"
                                     class="btn btn-outline-primary w-100 rounded-pill">
                                     <i class="fa-solid fa-pen"></i> Edit Tenant
                                 </a>
+
+                                {{-- Delete --}}
+                                <form id="deleteForm" action="{{ route('tenant.destroy', $tenant->id) }}" method="POST"
+                                    class="w-100">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="btn btn-outline-danger w-100 rounded-pill"
+                                        id="deleteButton">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </button>
+                                </form>
                             </div>
                         </div>
-
 
                     </div>
                 </div>
@@ -120,7 +150,7 @@
         </div>
     </div>
 
-    {{-- Fade-in Styles --}}
+    {{-- Styles --}}
     <style>
         .fade-in {
             opacity: 0;
@@ -138,17 +168,41 @@
         }
     </style>
 
+    {{-- SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     {{-- Scripts --}}
     <script>
+        // PDF Fade In
         function fadeInPdf() {
             document.getElementById('pdfLoader')?.classList.add('d-none');
             document.getElementById('pdfIframe')?.classList.remove('opacity-0');
         }
 
+        // Document Fade In
         document.addEventListener("DOMContentLoaded", function() {
             setTimeout(() => {
                 document.querySelectorAll('.fade-in').forEach(el => el.classList.add('show'));
             }, 100);
+        });
+
+        // Delete Confirmation
+        document.getElementById('deleteButton').addEventListener('click', function(e) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to delete this tenant!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm').submit();
+                }
+            });
         });
     </script>
 </x-layout>

@@ -5,32 +5,110 @@
 
                 <h2 class="mb-4 fw-bold text-primary">Add Tenant</h2>
 
-                {{-- File Upload Section --}}
-                <div class="card shadow-sm mb-5">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Upload Tenant File</h5>
-                        <form id="uploadForm" action="{{ route('tenants.store') }}" method="POST"
-                            enctype="multipart/form-data">
-                            @csrf
+                {{-- Start Form Here --}}
+                <form id="uploadForm" action="{{ route('tenants.store') }}" method="POST"
+                    enctype="multipart/form-data" class="needs-validation" novalidate>
+                    @csrf
+
+                    {{-- File Upload Section --}}
+                    <div class="card shadow-sm mb-5">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Upload Tenant File</h5>
                             <div class="mb-3">
                                 <input type="file" class="form-control" id="tenant_file" name="tenant_file"
-                                    accept=".jpg,.jpeg,.png,.pdf">
-                                @error('tenant_file')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
+                                    accept=".jpg,.jpeg,.png,.pdf" required>
+                                <div class="invalid-feedback">
+                                    Please upload a file.
+                                </div>
                             </div>
                             <div class="mb-3">
-                                <select class="form-select" id="document_type" name="document_type">
+                                <select class="form-select" id="document_type" name="document_type" required>
                                     <option value="" disabled selected>Select type</option>
                                     <option value="nid">NID</option>
                                     <option value="passport">Passport</option>
                                 </select>
-                                @error('document_type')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
+                                <div class="invalid-feedback">
+                                    Please select a document type.
+                                </div>
                             </div>
+                        </div>
                     </div>
-                </div>
+
+                    {{-- Tenant Form Section --}}
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Tenant Information</h5>
+
+                            {{-- Hidden inputs --}}
+                            <input type="hidden" name="document_type_hidden" id="document_type_hidden">
+                            <input type="hidden" name="tenant_file_base64" id="tenant_file_base64">
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="name" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                    <div class="invalid-feedback">
+                                        Please enter a full name.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="id_number" class="form-label">ID Number</label>
+                                    <input type="text" class="form-control" id="id_number" name="id_number" required>
+                                    <div class="invalid-feedback">
+                                        Please enter an ID number.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Phone</label>
+                                    <input type="text" class="form-control" id="phone" name="phone" required>
+                                    <div class="invalid-feedback">
+                                        Please enter a valid phone number.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="father_name" class="form-label">Father's Name</label>
+                                    <input type="text" class="form-control" id="father_name" name="father_name">
+                                    <div class="invalid-feedback">
+                                        Please fill at least one of Father's Name, Mother's Name, or Spouse's Name.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="mother_name" class="form-label">Mother's Name</label>
+                                    <input type="text" class="form-control" id="mother_name" name="mother_name">
+                                    <div class="invalid-feedback">
+                                        Please fill at least one of Father's Name, Mother's Name, or Spouse's Name.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="spouse_name" class="form-label">Spouse Name</label>
+                                    <input type="text" class="form-control" id="spouse_name" name="spouse_name">
+                                    <div class="invalid-feedback">
+                                        Please fill at least one of Father's Name, Mother's Name, or Spouse's Name.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                    <div class="invalid-feedback">
+                                        Please enter a valid email address.
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="address" class="form-label">Permanent Address</label>
+                                    <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                                    <div class="invalid-feedback">
+                                        Please enter a permanent address.
+                                    </div>
+                                </div>
+
+                                <div class="col-12 mt-3">
+                                    <button type="submit" class="btn btn-primary w-100">Add Tenant</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form> {{-- End Form Here --}}
 
                 {{-- Preview Modal --}}
                 <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
@@ -49,78 +127,6 @@
                                 <button type="button" id="confirmUpload" class="btn btn-primary">Upload</button>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                {{-- Tenant Form Section --}}
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Tenant Information</h5>
-                        <input type="hidden" name="document_type" id="document_type_hidden">
-                        <input type="hidden" name="tenant_file_base64" id="tenant_file_base64">
-
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="name" class="form-label">Full Name</label>
-                                <input type="text" class="form-control" id="name" name="name">
-                                @error('name')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6">
-                                <label for="id_number" class="form-label">ID Number</label>
-                                <input type="text" class="form-control" id="id_number" name="id_number">
-                                @error('id_number')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6">
-                                <label for="phone" class="form-label">Phone</label>
-                                <input type="text" class="form-control" id="phone" name="phone">
-                                @error('phone')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6">
-                                <label for="father_name" class="form-label">Father's Name</label>
-                                <input type="text" class="form-control" id="father_name" name="father_name">
-                                @error('father_name')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6">
-                                <label for="mother_name" class="form-label">Mother's Name</label>
-                                <input type="text" class="form-control" id="mother_name" name="mother_name">
-                                @error('mother_name')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6">
-                                <label for="spouse_name" class="form-label">Spouse Name</label>
-                                <input type="text" class="form-control" id="spouse_name" name="spouse_name">
-                                @error('spouse_name')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email">
-                                @error('email')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-12">
-                                <label for="address" class="form-label">Permanent Address</label>
-                                <textarea class="form-control" id="address" name="address" rows="2"></textarea>
-                                @error('address')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-12 mt-3">
-                                <button type="submit" class="btn btn-primary w-100">Add Tenant</button>
-                            </div>
-                        </div>
-                        </form>
                     </div>
                 </div>
 
@@ -143,8 +149,6 @@
         }
     </style>
 </x-layout>
-
-
 {{-- Libraries --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -152,3 +156,66 @@
 
 {{-- Custom Scripts --}}
 <script src="{{ asset('js/preview&autofill.js') }}"></script>
+
+<script>
+    (() => {
+        'use strict'
+
+        const forms = document.querySelectorAll('.needs-validation');
+
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+
+                const father = document.getElementById('father_name');
+                const mother = document.getElementById('mother_name');
+                const spouse = document.getElementById('spouse_name');
+
+                const familyValid = father.value.trim() !== '' || mother.value.trim() !== '' || spouse.value.trim() !== '';
+
+                if (!familyValid) {
+                    // Mark all three fields invalid
+                    father.classList.add('is-invalid');
+                    mother.classList.add('is-invalid');
+                    spouse.classList.add('is-invalid');
+
+                    event.preventDefault();
+                    event.stopPropagation();
+                } else {
+                    // Only remove 'is-invalid' if one is filled
+                    father.classList.remove('is-invalid');
+                    mother.classList.remove('is-invalid');
+                    spouse.classList.remove('is-invalid');
+
+                    // 🚫 DON'T ADD 'is-valid' manually here
+                }
+
+                if (!form.checkValidity() || !familyValid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add('was-validated');
+            }, false);
+
+            // Live typing validation
+            ['father_name', 'mother_name', 'spouse_name'].forEach(id => {
+                document.getElementById(id).addEventListener('input', () => {
+                    const father = document.getElementById('father_name');
+                    const mother = document.getElementById('mother_name');
+                    const spouse = document.getElementById('spouse_name');
+
+                    const familyValid = father.value.trim() !== '' || mother.value.trim() !== '' || spouse.value.trim() !== '';
+
+                    if (familyValid) {
+                        father.classList.remove('is-invalid');
+                        mother.classList.remove('is-invalid');
+                        spouse.classList.remove('is-invalid');
+
+                        // 🚫 Again, DON'T add is-valid manually
+                    }
+                });
+            });
+        })
+    })();
+    </script>
+

@@ -116,7 +116,15 @@ class TenantController extends Controller
         return redirect()->route('tenant.show', $tenant->id)->with('success', 'Tenant updated successfully!');
     }
 
+    public function destroy($id)
+    {
+        $tenant = Tenant::findOrFail($id);
 
+        // Soft delete (file stays unless you want to delete it too)
+        $tenant->delete();
+
+        return redirect()->route('tenant.index')->with('success', 'Tenant deleted successfully.');
+    }
 
 
     /**
