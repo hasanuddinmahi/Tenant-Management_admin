@@ -5,7 +5,6 @@ const previewModal = new bootstrap.Modal(document.getElementById('previewModal')
 const documentTypeDropdown = document.getElementById('document_type');
 const documentTypeHidden = document.getElementById('document_type_hidden');
 const tenantFileBase64 = document.getElementById('tenant_file_base64');
-const fileError = document.getElementById('tenant_file_error'); // Error message element
 
 fileInput.addEventListener('change', previewFile);
 confirmUpload.addEventListener('click', scanAndAutofill);

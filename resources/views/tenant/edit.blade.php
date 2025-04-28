@@ -3,27 +3,43 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
 
-                <h2 class="mb-4 fw-bold text-primary">Add Tenant</h2>
+                <h2 class="mb-4 fw-bold text-primary">Edit Tenant</h2>
 
                 {{-- File Upload Section --}}
                 <div class="card shadow-sm mb-5">
                     <div class="card-body">
-                        <h5 class="card-title mb-3">Upload Tenant File</h5>
-                        <form id="uploadForm" action="{{ route('tenants.store') }}" method="POST"
+                        <h5 class="card-title mb-3">Update Tenant File (Optional)</h5>
+                        <form id="uploadForm" action="{{ route('tenant.update', $tenant->id) }}" method="POST"
                             enctype="multipart/form-data">
                             @csrf
+                            @method('PUT')
+
                             <div class="mb-3">
                                 <input type="file" class="form-control" id="tenant_file" name="tenant_file"
                                     accept=".jpg,.jpeg,.png,.pdf">
                                 @error('tenant_file')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
+                                @if ($tenant->document_path)
+                                    <div class="mt-2">
+                                        <a href="{{ asset($tenant->document_path) }}" target="_blank"
+                                            class="btn btn-sm btn-outline-primary rounded-pill">📄 View Stored
+                                            Document</a>
+                                    </div>
+                                @endif
                             </div>
+
                             <div class="mb-3">
                                 <select class="form-select" id="document_type" name="document_type">
-                                    <option value="" disabled selected>Select type</option>
-                                    <option value="nid">NID</option>
-                                    <option value="passport">Passport</option>
+                                    <option value="" disabled {{ old('document_type', $tenant->document_type) ? '' : 'selected' }}>
+                                        Select type
+                                    </option>
+                                    <option value="nid" {{ old('document_type', $tenant->document_type) === 'nid' ? 'selected' : '' }}>
+                                        NID
+                                    </option>
+                                    <option value="passport" {{ old('document_type', $tenant->document_type) === 'passport' ? 'selected' : '' }}>
+                                        Passport
+                                    </option>
                                 </select>
                                 @error('document_type')
                                     <div class="text-danger">{{ $message }}</div>
@@ -58,68 +74,76 @@
                         <h5 class="card-title mb-3">Tenant Information</h5>
                         <input type="hidden" name="document_type" id="document_type_hidden">
                         <input type="hidden" name="tenant_file_base64" id="tenant_file_base64">
-
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="name" class="form-label">Full Name</label>
-                                <input type="text" class="form-control" id="name" name="name">
+                                <input type="text" class="form-control" id="name" name="name"
+                                    value="{{ old('name', $tenant->name) }}">
                                 @error('name')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="id_number" class="form-label">ID Number</label>
-                                <input type="text" class="form-control" id="id_number" name="id_number">
+                                <input type="text" class="form-control" id="id_number" name="id_number"
+                                    value="{{ old('id_number', $tenant->id_number) }}">
                                 @error('id_number')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="phone" class="form-label">Phone</label>
-                                <input type="text" class="form-control" id="phone" name="phone">
+                                <input type="text" class="form-control" id="phone" name="phone"
+                                    value="{{ old('phone', $tenant->phone) }}">
                                 @error('phone')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="father_name" class="form-label">Father's Name</label>
-                                <input type="text" class="form-control" id="father_name" name="father_name">
+                                <input type="text" class="form-control" id="father_name" name="father_name"
+                                    value="{{ old('father_name', $tenant->father_name) }}">
                                 @error('father_name')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="mother_name" class="form-label">Mother's Name</label>
-                                <input type="text" class="form-control" id="mother_name" name="mother_name">
+                                <input type="text" class="form-control" id="mother_name" name="mother_name"
+                                    value="{{ old('mother_name', $tenant->mother_name) }}">
                                 @error('mother_name')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="spouse_name" class="form-label">Spouse Name</label>
-                                <input type="text" class="form-control" id="spouse_name" name="spouse_name">
+                                <input type="text" class="form-control" id="spouse_name" name="spouse_name"
+                                    value="{{ old('spouse_name', $tenant->spouse_name) }}">
                                 @error('spouse_name')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email">
+                                <input type="email" class="form-control" id="email" name="email"
+                                    value="{{ old('email', $tenant->email) }}">
                                 @error('email')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-12">
                                 <label for="address" class="form-label">Permanent Address</label>
-                                <textarea class="form-control" id="address" name="address" rows="2"></textarea>
+                                <textarea class="form-control" id="address" name="address" rows="2">{{ old('address', $tenant->address) }}</textarea>
                                 @error('address')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
+
                             <div class="col-12 mt-3">
-                                <button type="submit" class="btn btn-primary w-100">Add Tenant</button>
+                                <button type="submit" class="btn btn-primary w-100">Update Tenant</button>
                             </div>
                         </div>
+
                         </form>
                     </div>
                 </div>
@@ -143,7 +167,6 @@
         }
     </style>
 </x-layout>
-
 
 {{-- Libraries --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>

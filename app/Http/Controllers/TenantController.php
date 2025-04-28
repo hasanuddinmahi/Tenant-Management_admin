@@ -6,6 +6,7 @@ use App\Models\Tenant;
 use Illuminate\Http\Request;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class TenantController extends Controller
 {
@@ -69,6 +70,54 @@ class TenantController extends Controller
         // Return the view with the tenant data
         return view('tenant.show', compact('tenant'));
     }
+
+    // Show the edit form for a tenant
+    public function edit($id)
+    {
+        $tenant = Tenant::findOrFail($id); // Find the tenant or fail
+        return view('tenant.edit', compact('tenant')); // Pass the tenant to the edit view
+    }
+
+    public function update(Request $request, Tenant $tenant)
+    {
+        // Validate request data
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'id_number' => 'required|string|max:255',
+            'address' => 'required|string',
+            'phone' => 'nullable|required_without:email|string|max:20',
+            'email' => 'nullable|required_without:phone|email|max:255',
+            'father_name' => 'nullable|string|max:255|required_without_all:mother_name,spouse_name',
+            'mother_name' => 'nullable|string|max:255|required_without_all:father_name,spouse_name',
+            'spouse_name' => 'nullable|string|max:255|required_without_all:father_name,mother_name',
+        ]);
+
+        // Check if a new file is uploaded and process it
+        if ($request->filled('tenant_file_base64')) {
+            $validated['document_path'] = $this->uploadBase64ToCloudinary($request->tenant_file_base64);
+        } else {
+            $validated['document_path'] = $tenant->document_path;  // Keep the previous document path if no new file
+        }
+
+        // Update tenant record
+        $tenant->update([
+            'name' => $validated['name'],
+            'id_number' => $validated['id_number'],
+            'phone' => $validated['phone'],
+            'father_name' => $validated['father_name'],
+            'mother_name' => $validated['mother_name'],
+            'spouse_name' => $validated['spouse_name'],
+            'email' => $validated['email'],
+            'address' => $validated['address'],
+            'document_path' => $validated['document_path'],
+        ]);
+
+        // Redirect to tenant details page
+        return redirect()->route('tenant.show', $tenant->id)->with('success', 'Tenant updated successfully!');
+    }
+
+
+
 
     /**
      * Uploads a base64 encoded file to Cloudinary.
