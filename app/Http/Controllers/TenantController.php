@@ -35,8 +35,8 @@ class TenantController extends Controller
             'address' => 'required|string',
             'document_type' => 'required|string|in:nid,passport',
             'tenant_file_base64' => 'required|string',
-            'phone' => 'nullable|required_without:email|string|max:20',
-            'email' => 'nullable|required_without:phone|email|max:255',
+            'phone' => 'required|string|max:20',
+            'email' => 'nullable|email|max:255',
             'father_name' => 'nullable|string|max:255|required_without_all:mother_name,spouse_name',
             'mother_name' => 'nullable|string|max:255|required_without_all:father_name,spouse_name',
             'spouse_name' => 'nullable|string|max:255|required_without_all:father_name,mother_name',
@@ -85,8 +85,8 @@ class TenantController extends Controller
             'name' => 'required|string|max:255',
             'id_number' => 'required|string|max:255',
             'address' => 'required|string',
-            'phone' => 'nullable|required_without:email|string|max:20',
-            'email' => 'nullable|required_without:phone|email|max:255',
+            'phone' => 'required|string|max:20',
+            'email' => 'nullable|email|max:255',
             'father_name' => 'nullable|string|max:255|required_without_all:mother_name,spouse_name',
             'mother_name' => 'nullable|string|max:255|required_without_all:father_name,spouse_name',
             'spouse_name' => 'nullable|string|max:255|required_without_all:father_name,mother_name',
@@ -99,21 +99,38 @@ class TenantController extends Controller
             $validated['document_path'] = $tenant->document_path;  // Keep the previous document path if no new file
         }
 
-        // Update tenant record
-        $tenant->update([
-            'name' => $validated['name'],
-            'id_number' => $validated['id_number'],
-            'phone' => $validated['phone'],
-            'father_name' => $validated['father_name'],
-            'mother_name' => $validated['mother_name'],
-            'spouse_name' => $validated['spouse_name'],
-            'email' => $validated['email'],
-            'address' => $validated['address'],
-            'document_path' => $validated['document_path'],
-        ]);
+        // Check if any data has been updated
+        $isUpdated = false;
+        if (
+            $tenant->name != $validated['name'] || $tenant->id_number != $validated['id_number'] ||
+            $tenant->phone != $validated['phone'] || $tenant->father_name != $validated['father_name'] ||
+            $tenant->mother_name != $validated['mother_name'] || $tenant->spouse_name != $validated['spouse_name'] ||
+            $tenant->email != $validated['email'] || $tenant->address != $validated['address'] ||
+            $tenant->document_path != $validated['document_path']
+        ) {
+            $isUpdated = true;
+        }
 
-        // Redirect to tenant details page
-        return redirect()->route('tenant.show', $tenant->id)->with('success', 'Tenant updated successfully!');
+        // Only update if there's a change
+        if ($isUpdated) {
+            $tenant->update([
+                'name' => $validated['name'],
+                'id_number' => $validated['id_number'],
+                'phone' => $validated['phone'],
+                'father_name' => $validated['father_name'],
+                'mother_name' => $validated['mother_name'],
+                'spouse_name' => $validated['spouse_name'],
+                'email' => $validated['email'],
+                'address' => $validated['address'],
+                'document_path' => $validated['document_path'],
+            ]);
+
+            // Add success message to session if updated
+            return redirect()->route('tenant.show', $tenant->id)->with('success', 'Tenant updated successfully!');
+        }
+
+        // If no changes were made, redirect back without setting a success message
+        return redirect()->route('tenant.show', $tenant->id);
     }
 
     public function destroy($id)

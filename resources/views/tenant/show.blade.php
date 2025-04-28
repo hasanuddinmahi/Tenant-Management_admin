@@ -1,19 +1,5 @@
 <x-layout>
-
-    @if (session('success'))
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'success',
-            title: '{{ session('success') }}',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-        });
-    </script>
-@endif
+    @include('components.flash-messages')
 
     <div class="container py-5">
         <div class="row justify-content-center">
@@ -167,9 +153,6 @@
             transition: opacity 0.6s ease;
         }
     </style>
-
-    {{-- SweetAlert2 --}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     {{-- Scripts --}}
     <script>

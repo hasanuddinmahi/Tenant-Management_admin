@@ -1,4 +1,6 @@
 <x-layout>
+    @include('tenant.validation-errors')
+
     <div class="container my-5">
         <div class="row justify-content-center">
             <div class="col-lg-8">
@@ -6,8 +8,8 @@
                 <h2 class="mb-4 fw-bold text-primary">Add Tenant</h2>
 
                 {{-- Start Form Here --}}
-                <form id="uploadForm" action="{{ route('tenants.store') }}" method="POST"
-                    enctype="multipart/form-data" class="needs-validation" novalidate>
+                <form id="uploadForm" action="{{ route('tenants.store') }}" method="POST" enctype="multipart/form-data"
+                    class="needs-validation" novalidate>
                     @csrf
 
                     {{-- File Upload Section --}}
@@ -75,20 +77,14 @@
                                 <div class="col-md-6">
                                     <label for="mother_name" class="form-label">Mother's Name</label>
                                     <input type="text" class="form-control" id="mother_name" name="mother_name">
-                                    <div class="invalid-feedback">
-                                        Please fill at least one of Father's Name, Mother's Name, or Spouse's Name.
-                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="spouse_name" class="form-label">Spouse Name</label>
                                     <input type="text" class="form-control" id="spouse_name" name="spouse_name">
-                                    <div class="invalid-feedback">
-                                        Please fill at least one of Father's Name, Mother's Name, or Spouse's Name.
-                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
+                                    <input type="email" class="form-control" id="email" name="email">
                                     <div class="invalid-feedback">
                                         Please enter a valid email address.
                                     </div>
@@ -123,7 +119,8 @@
                                 <div id="filePreview" class="w-100"></div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancel</button>
                                 <button type="button" id="confirmUpload" class="btn btn-primary">Upload</button>
                             </div>
                         </div>
@@ -156,66 +153,4 @@
 
 {{-- Custom Scripts --}}
 <script src="{{ asset('js/preview&autofill.js') }}"></script>
-
-<script>
-    (() => {
-        'use strict'
-
-        const forms = document.querySelectorAll('.needs-validation');
-
-        Array.from(forms).forEach(form => {
-            form.addEventListener('submit', event => {
-
-                const father = document.getElementById('father_name');
-                const mother = document.getElementById('mother_name');
-                const spouse = document.getElementById('spouse_name');
-
-                const familyValid = father.value.trim() !== '' || mother.value.trim() !== '' || spouse.value.trim() !== '';
-
-                if (!familyValid) {
-                    // Mark all three fields invalid
-                    father.classList.add('is-invalid');
-                    mother.classList.add('is-invalid');
-                    spouse.classList.add('is-invalid');
-
-                    event.preventDefault();
-                    event.stopPropagation();
-                } else {
-                    // Only remove 'is-invalid' if one is filled
-                    father.classList.remove('is-invalid');
-                    mother.classList.remove('is-invalid');
-                    spouse.classList.remove('is-invalid');
-
-                    // 🚫 DON'T ADD 'is-valid' manually here
-                }
-
-                if (!form.checkValidity() || !familyValid) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-
-                form.classList.add('was-validated');
-            }, false);
-
-            // Live typing validation
-            ['father_name', 'mother_name', 'spouse_name'].forEach(id => {
-                document.getElementById(id).addEventListener('input', () => {
-                    const father = document.getElementById('father_name');
-                    const mother = document.getElementById('mother_name');
-                    const spouse = document.getElementById('spouse_name');
-
-                    const familyValid = father.value.trim() !== '' || mother.value.trim() !== '' || spouse.value.trim() !== '';
-
-                    if (familyValid) {
-                        father.classList.remove('is-invalid');
-                        mother.classList.remove('is-invalid');
-                        spouse.classList.remove('is-invalid');
-
-                        // 🚫 Again, DON'T add is-valid manually
-                    }
-                });
-            });
-        })
-    })();
-    </script>
-
+<script src="{{ asset('js/validation.js') }}"></script>
