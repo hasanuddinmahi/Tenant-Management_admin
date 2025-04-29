@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\ApartmentController;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TenantController;
+use App\Models\Apartment;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,13 +29,10 @@ Route::get('/booking', function(){
     return view('content.booking');
 });
 
-
-Route::get('/apartment', function(){
-    return view('content.apartment');
-});
 Route::get('/maintenance', function(){
     return view('content.maintenance');
 });
 
-
+Route::get('/apartment', [ApartmentController::class, 'index'])->name('apartment.index');
+Route::get('/apartment/create', [ApartmentController::class, 'create'])->name('apartments.create');
 Route::resource('tenant', TenantController::class);
