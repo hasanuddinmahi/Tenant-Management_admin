@@ -173,27 +173,36 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pica@9.0.1/dist/pica.min.js"></script>
+{{-- Custom Scripts --}}
+<script src="{{ asset('js/preview&autofill.js') }}"></script>
 <script src="{{ asset('js/validation.js') }}"></script>
 
 
 <script>
     document.getElementById('updateTenantButton').addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent form submission
+        event.preventDefault(); // Stop regular form submission
 
-        // SweetAlert2 Confirmation Popup
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'Do you want to update this tenant?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, update it!',
-            cancelButtonText: 'No, cancel!',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Submit the form if confirmed
-                document.getElementById('uploadForm').submit();
-            }
-        });
+        const form = document.getElementById('uploadForm');
+
+        // Trigger HTML5 validation manually
+        if (form.checkValidity()) {
+            // If valid, show SweetAlert confirmation
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to update this tenant?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, update it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // Submit the form if confirmed
+                }
+            });
+        } else {
+            // If not valid, add Bootstrap validation feedback class
+            form.classList.add('was-validated');
+        }
     });
 </script>

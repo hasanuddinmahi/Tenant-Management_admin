@@ -111,13 +111,13 @@
                                 </a>
 
                                 {{-- Edit --}}
-                                <a href="{{ route('tenant.edit', $tenant->id) }}"
+                                <a href="{{ route('tenant.edit', $tenant) }}"
                                     class="btn btn-outline-primary w-100 rounded-pill">
                                     <i class="fa-solid fa-pen"></i> Edit Tenant
                                 </a>
 
                                 {{-- Delete --}}
-                                <form id="deleteForm" action="{{ route('tenant.destroy', $tenant->id) }}" method="POST"
+                                <form id="deleteForm" action="{{ route('tenant.destroy', $tenant) }}" method="POST"
                                     class="w-100">
                                     @csrf
                                     @method('DELETE')

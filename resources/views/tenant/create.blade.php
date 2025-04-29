@@ -8,7 +8,7 @@
                 <h2 class="mb-4 fw-bold text-primary">Add Tenant</h2>
 
                 {{-- Start Form Here --}}
-                <form id="uploadForm" action="{{ route('tenants.store') }}" method="POST" enctype="multipart/form-data"
+                <form id="uploadForm" action="{{ route('tenant.store') }}" method="POST" enctype="multipart/form-data"
                     class="needs-validation" novalidate>
                     @csrf
 
