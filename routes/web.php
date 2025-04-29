@@ -34,5 +34,8 @@ Route::get('/maintenance', function(){
 });
 
 Route::get('/apartment', [ApartmentController::class, 'index'])->name('apartment.index');
-Route::get('/apartment/create', [ApartmentController::class, 'create'])->name('apartments.create');
+Route::get('/apartment/create', [ApartmentController::class, 'create'])->name('apartment.create');
+Route::post('/apartment', [ApartmentController::class, 'store'])->name('apartment.store');
+Route::get('/apartments/{id}', [ApartmentController::class, 'show'])->name('apartment.show');
+Route::get('/apartments/{id}/edit', [ApartmentController::class, 'edit'])->name('apartment.edit');
 Route::resource('tenant', TenantController::class);

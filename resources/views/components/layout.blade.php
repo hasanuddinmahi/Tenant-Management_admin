@@ -39,6 +39,7 @@
             <div class="container py-5">
                 <div class="text-center">
                     <main class="container">
+                        @include('components.flash-messages')
                         {{ $slot }}
                     </main>
                 </div>
