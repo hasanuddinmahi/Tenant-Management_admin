@@ -22,20 +22,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/findme', function(){
+Route::get('/findme', function () {
     return view('Me.findme');
 });
-Route::get('/booking', function(){
+Route::get('/booking', function () {
     return view('content.booking');
 });
 
-Route::get('/maintenance', function(){
+Route::get('/maintenance', function () {
     return view('content.maintenance');
 });
 
-Route::get('/apartment', [ApartmentController::class, 'index'])->name('apartment.index');
-Route::get('/apartment/create', [ApartmentController::class, 'create'])->name('apartment.create');
-Route::post('/apartment', [ApartmentController::class, 'store'])->name('apartment.store');
-Route::get('/apartments/{id}', [ApartmentController::class, 'show'])->name('apartment.show');
-Route::get('/apartments/{id}/edit', [ApartmentController::class, 'edit'])->name('apartment.edit');
+Route::resource('apartment', ApartmentController::class);
 Route::resource('tenant', TenantController::class);

@@ -1,19 +1,59 @@
 <x-layout>
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1>Apartment Details</h1>
-            <a href="/apartment" class="btn btn-secondary">Back to List</a>
-        </div>
+    <div class="container py-4">
 
-        <div class="card mb-3 shadow-sm">
+        <div class="card shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">{{ $apartment->apartmentName }}</h5>
-                <p class="card-text mb-1"><strong>Bedrooms:</strong> {{ $apartment->bedroomNumber }}</p>
-                <p class="card-text mb-1"><strong>Price:</strong> ${{ number_format($apartment->price, 2) }}</p>
-                <p class="card-text mb-1"><strong>Location:</strong> {{ $apartment->location }}</p>
-                <a href="{{ route('apartment.edit', $apartment->id) }}" class="btn btn-primary">Edit</a>
+                <h2 class="text-center fw-bold text-primary mb-5">Apartment Details</h2>
+                <h4 class="card-title mb-3">{{ $apartment->apartmentName }}</h4>
+
+                <ul class="list-unstyled mb-4">
+                    <li class="mb-2"><strong>Bedrooms:</strong> {{ $apartment->bedroomNumber }}</li>
+                    <li class="mb-2"><strong>Price:</strong> ${{ number_format($apartment->price, 2) }}</li>
+                    <li class="mb-2"><strong>Location:</strong> {{ $apartment->location }}</li>
+                </ul>
+
+                {{-- Action Buttons --}}
+                <div class="d-flex flex-column flex-md-row gap-3">
+                    <a href="{{ route('apartment.index') }}" class="btn btn-secondary rounded-pill w-100">
+                        <i class="fa-solid fa-users me-1"></i> Back
+                    </a>
+
+                    <a href="{{ route('apartment.edit', $apartment) }}"
+                        class="btn btn-outline-primary rounded-pill w-100">
+                        <i class="fa-solid fa-pen me-1"></i> Edit Apartment
+                    </a>
+
+                    <form id="deleteForm" action="{{ route('apartment.destroy', $apartment->id) }}" method="POST"
+                        class="w-100">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" class="btn btn-outline-danger w-100 rounded-pill" id="deleteButton">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
-
     </div>
 </x-layout>
+
+<script>
+    // Delete Confirmation
+    document.getElementById('deleteButton').addEventListener('click', function(e) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to delete this Apartment Listing!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('deleteForm').submit();
+            }
+        });
+    });
+</script>

@@ -3,42 +3,64 @@
 namespace App\Http\Controllers;
 
 use App\Models\Apartment;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreApartmentRequest;
+use App\Http\Requests\UpdateApartmentRequest;
+use App\Services\ApartmentService;
 
 class ApartmentController extends Controller
 {
-    // Show a list of all apartments
+    protected $service;
+
+    public function __construct(ApartmentService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index()
     {
         $apartments = Apartment::latest()->get();
         return view('apartment.index', compact('apartments'));
     }
 
-    // Show form to create a new apartment
     public function create()
     {
         return view('apartment.create');
     }
 
-    // Store a new apartment
-    public function store(Request $request)
+    public function store(StoreApartmentRequest $request)
     {
-        $validated = $request->validate([
-            'apartmentName'   => 'required|string|max:255',
-            'bedroomNumber'   => 'required|integer|min:1',
-            'price'           => 'required|numeric|min:0',
-            'location'        => 'required|string|max:255',
-        ]);
+        $success = $this->service->create($request->validated());
 
-        Apartment::create($validated);
-
-        return redirect()->route('apartment.index')->with('success', 'Apartment added successfully!');
+        return $success
+            ? redirect()->route('apartment.index')->with('success', 'Apartment added successfully!')
+            : back()->withInput()->with('error', 'Failed to add apartment. Please try again.');
     }
 
-    // Show a specific apartment
-    public function show($id)
+    public function show(Apartment $apartment)
     {
-        $apartment = Apartment::findOrFail($id);
         return view('apartment.show', compact('apartment'));
+    }
+
+    public function edit(Apartment $apartment)
+    {
+        return view('apartment.edit', compact('apartment'));
+    }
+
+    public function update(UpdateApartmentRequest $request, Apartment $apartment)
+    {
+        $success = $this->service->update($apartment, $request->validated());
+
+        return $success
+            ? redirect()->route('apartment.index')->with('success', 'Apartment updated successfully!')
+            : back()->withInput()->with('error', 'Failed to update apartment. Please try again.');
+    }
+
+    public function destroy(Apartment $apartment)
+    {
+        $success = $this->service->delete($apartment);
+
+        return $success
+            ? redirect()->route('apartment.index')->with('success', 'Apartment deleted successfully!')
+            : back()->with('error', 'Failed to delete apartment.');
     }
 }

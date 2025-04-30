@@ -1,5 +1,7 @@
 <x-layout>
 
+@include('apartment.validation-errors')
+
     <div class="container my-5">
         <div class="row justify-content-center">
             <div class="col-lg-8">
@@ -68,3 +70,4 @@
         </div>
     </div>
 </x-layout>
+<script src="{{ asset('js/validation.js') }}"></script>

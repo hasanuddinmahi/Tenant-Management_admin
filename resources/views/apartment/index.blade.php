@@ -20,11 +20,17 @@
                 <tbody>
                     @foreach ($apartments as $apartment)
                         <tr>
-                            <td><a href="{{ route('apartment.show', $apartment->id) }}" class="text-decoration-none text-dark">{{ $loop->iteration }}</a></td>
-                            <td><a href="{{ route('apartment.show', $apartment->id) }}" class="text-decoration-none text-dark">{{ $apartment->apartmentName }}</a></td>
-                            <td><a href="{{ route('apartment.show', $apartment->id) }}" class="text-decoration-none text-dark">{{ $apartment->bedroomNumber }}</a></td>
-                            <td><a href="{{ route('apartment.show', $apartment->id) }}" class="text-decoration-none text-dark">${{ number_format($apartment->price, 2) }}</a></td>
-                            <td><a href="{{ route('apartment.show', $apartment->id) }}" class="text-decoration-none text-dark">{{ $apartment->location }}</a></td>
+                            <td><a href="{{ route('apartment.show', $apartment->id) }}"
+                                    class="text-decoration-none text-dark">{{ $loop->iteration }}</a></td>
+                            <td><a href="{{ route('apartment.show', $apartment->id) }}"
+                                    class="text-decoration-none text-dark">{{ $apartment->apartmentName }}</a></td>
+                            <td><a href="{{ route('apartment.show', $apartment->id) }}"
+                                    class="text-decoration-none text-dark">{{ $apartment->bedroomNumber }}</a></td>
+                            <td><a href="{{ route('apartment.show', $apartment->id) }}"
+                                    class="text-decoration-none text-dark">Tk
+                                    {{ number_format($apartment->price, 2) }}</a></td>
+                            <td><a href="{{ route('apartment.show', $apartment->id) }}"
+                                    class="text-decoration-none text-dark">{{ $apartment->location }}</a></td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -37,11 +43,12 @@
                 <div class="card mb-3 shadow-sm">
                     <div class="card-body">
                         <a href="{{ route('apartment.show', $apartment->id) }}" class="text-decoration-none text-dark">
-                        <h5 class="card-title">{{ $apartment->apartmentName }}</h5>
-                        <p class="card-text mb-1"><strong>Bedrooms:</strong> {{ $apartment->bedroomNumber }}</p>
-                        <p class="card-text mb-1"><strong>Price:</strong> ${{ number_format($apartment->price, 2) }}</p>
-                        <p class="card-text mb-1"><strong>Location:</strong> {{ $apartment->location }}</p>
-                    </a>
+                            <h5 class="card-title">{{ $apartment->apartmentName }}</h5>
+                            <p class="card-text mb-1"><strong>Bedrooms:</strong> {{ $apartment->bedroomNumber }}</p>
+                            <p class="card-text mb-1"><strong>Price:</strong>
+                                Tk {{ number_format($apartment->price, 2) }}</p>
+                            <p class="card-text mb-1"><strong>Location:</strong> {{ $apartment->location }}</p>
+                        </a>
                     </div>
                 </div>
             @endforeach
