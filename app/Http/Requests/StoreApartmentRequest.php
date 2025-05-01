@@ -26,7 +26,7 @@ class StoreApartmentRequest extends FormRequest
         return [
             'apartmentName'   => 'required|string|max:255',
             'bedroomNumber'   => 'required|integer|min:1',
-            'price'           => 'required|numeric|min:0',
+            'price'           => 'required|integer|min:0',
             'location'        => 'required|string|max:255',
         ];
     }

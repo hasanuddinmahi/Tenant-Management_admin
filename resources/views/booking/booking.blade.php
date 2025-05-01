@@ -1,5 +1,5 @@
 <x-layout>
     <div class="container-fluid p-4">
         <h2>Booking Side</h2>
-        <p>Feature Coming Soon</p>
+        <p>Checked In! Wait for Onboarding</p>
 </x-layout>

@@ -26,11 +26,11 @@ Route::get('/findme', function () {
     return view('Me.findme');
 });
 Route::get('/booking', function () {
-    return view('content.booking');
+    return view('booking.booking');
 });
 
 Route::get('/maintenance', function () {
-    return view('content.maintenance');
+    return view('maintenance.maintenance');
 });
 
 Route::resource('apartment', ApartmentController::class);

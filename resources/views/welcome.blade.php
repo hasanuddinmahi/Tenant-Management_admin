@@ -2,8 +2,8 @@
 
     <!-- Content -->
     <div class="container-fluid p-4">
-        <h2>Welcome to Dashboard</h2>
-        <p>This is the main content area. You can put your dashboard components here.</p>
+        <h2>Welcome to Onboard</h2>
+        <p>Fasten you seat belt. Enjoy your flight ✈️</p>
 
         <div class="row mt-4">
             <div class="col-md-3 mb-4">

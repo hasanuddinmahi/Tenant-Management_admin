@@ -8,7 +8,7 @@
 
                 <ul class="list-unstyled mb-4">
                     <li class="mb-2"><strong>Bedrooms:</strong> {{ $apartment->bedroomNumber }}</li>
-                    <li class="mb-2"><strong>Price:</strong> ${{ number_format($apartment->price, 2) }}</li>
+                    <li class="mb-2"><strong>Price:</strong> Tk{{ number_format($apartment->price) }}</li>
                     <li class="mb-2"><strong>Location:</strong> {{ $apartment->location }}</li>
                 </ul>
 

@@ -28,7 +28,7 @@
                                     class="text-decoration-none text-dark">{{ $apartment->bedroomNumber }}</a></td>
                             <td><a href="{{ route('apartment.show', $apartment->id) }}"
                                     class="text-decoration-none text-dark">Tk
-                                    {{ number_format($apartment->price, 2) }}</a></td>
+                                    {{ number_format($apartment->price) }}</a></td>
                             <td><a href="{{ route('apartment.show', $apartment->id) }}"
                                     class="text-decoration-none text-dark">{{ $apartment->location }}</a></td>
                         </tr>
