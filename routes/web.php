@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApartmentController;
+use App\Http\Controllers\BookingController;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
@@ -25,13 +26,14 @@ Route::get('/', function () {
 Route::get('/findme', function () {
     return view('Me.findme');
 });
-Route::get('/booking', function () {
-    return view('booking.booking');
-});
 
 Route::get('/maintenance', function () {
     return view('maintenance.maintenance');
 });
+
+Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
+Route::get('/booking/create', [BookingController::class, 'create'])->name('booking.create');
+Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 
 Route::resource('apartment', ApartmentController::class);
 Route::resource('tenant', TenantController::class);
