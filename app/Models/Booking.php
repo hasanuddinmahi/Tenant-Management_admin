@@ -23,9 +23,15 @@ class Booking extends Model
 
     // Default attributes
     protected $attributes = [
-        'payment_status' => 'unpaid', // Default payment status
-        'parking_charge' => 0,         // Default parking charge (as integer)
-        'other_charges' => 0,          // Default other charges (as integer)
+        'payment_status' => 'unpaid',
+        'parking_charge' => 0,
+        'other_charges' => 0,
+    ];
+
+    // Cast these attributes as dates (Carbon instances)
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
     ];
 
     // Relationships

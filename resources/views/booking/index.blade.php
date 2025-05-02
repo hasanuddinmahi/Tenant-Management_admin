@@ -21,7 +21,7 @@
                 <tbody>
                     @foreach ($bookings as $booking)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
+                            <td><a href="{{ route('booking.show', $booking->id) }}">{{ $loop->iteration }}</a></td>
                             <td>{{ $booking->apartment->apartmentName }}</td>
                             <td>{{ $booking->tenant->name }}</td>
                             <td>Tk {{ number_format($booking->apartment->price) }}</td>

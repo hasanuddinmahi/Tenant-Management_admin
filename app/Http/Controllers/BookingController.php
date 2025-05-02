@@ -79,7 +79,8 @@ class BookingController extends Controller
      */
     public function show($id)
     {
-        //
+        $booking = Booking::with(['apartment', 'tenant'])->findOrFail($id);
+        return view('booking.show', compact('booking'));
     }
 
     /**
@@ -90,8 +91,24 @@ class BookingController extends Controller
      */
     public function edit($id)
     {
-        //
+        $booking = Booking::with(['apartment', 'tenant'])->findOrFail($id);
+
+        // Get all currently booked apartment and tenant IDs
+        $bookedApartmentIds = Booking::where('id', '!=', $booking->id)->pluck('apartment_id')->toArray();
+        $bookedTenantIds = Booking::where('id', '!=', $booking->id)->pluck('tenant_id')->toArray();
+
+        // Fetch apartments and tenants excluding booked ones, but include current ones
+        $apartments = Apartment::whereNotIn('id', $bookedApartmentIds)
+            ->orWhere('id', $booking->apartment_id)
+            ->get();
+
+        $tenants = Tenant::whereNotIn('id', $bookedTenantIds)
+            ->orWhere('id', $booking->tenant_id)
+            ->get();
+
+        return view('booking.edit', compact('booking', 'apartments', 'tenants'));
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -102,8 +119,29 @@ class BookingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $booking = Booking::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'apartment_id'    => 'required|exists:apartments,id',
+            'tenant_id'       => 'required|exists:tenants,id',
+            'start_date'      => 'required|date',
+            'end_date'        => 'required|date|after_or_equal:start_date',
+            'parking_charge'  => 'nullable|integer|min:0',
+            'other_charges'   => 'nullable|integer|min:0',
+        ]);
+
+        $booking->update([
+            'apartment_id'    => $validatedData['apartment_id'],
+            'tenant_id'       => $validatedData['tenant_id'],
+            'start_date'      => $validatedData['start_date'],
+            'end_date'        => $validatedData['end_date'],
+            'parking_charge'  => $validatedData['parking_charge'] ?? 0,
+            'other_charges'   => $validatedData['other_charges'] ?? 0,
+        ]);
+
+        return redirect()->route('booking.show', $booking->id)->with('success', 'Booking updated successfully!');
     }
+
 
     /**
      * Remove the specified resource from storage.

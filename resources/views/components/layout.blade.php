@@ -48,7 +48,7 @@
     </div>
 
     <footer class="bg-dark text-white text-center py-3 mt-auto position-fixed bottom-0 w-100">
-        &copy; {{ date('Y') }} My Laravel App. All rights reserved.
+        &copy; {{ date('Y') }} Hasan Illusion Park. All rights reserved.
     </footer>
 
     <!-- Bootstrap JS -->
