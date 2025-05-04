@@ -1,6 +1,6 @@
 <x-layout>
 
-    @include('apartment.validation-errors')
+    @include('booking.validation-errors')
 
     <div class="container my-5">
         <div class="row justify-content-center">
@@ -37,7 +37,7 @@
                                 {{-- Tenant Selection --}}
                                 <div class="col-md-6">
                                     <label for="tenant_id" class="form-label">Tenant</label>
-                                    <select name="tenant_id" id="tenant_id" class="form-select" required>
+                                    <select name="tenant_id" id="tenant_id" class="form-select" >
                                         <option value="" disabled selected>Select Tenant</option>
                                         @foreach ($tenants as $tenant)
                                             <option value="{{ $tenant->id }}">{{ $tenant->name }}</option>

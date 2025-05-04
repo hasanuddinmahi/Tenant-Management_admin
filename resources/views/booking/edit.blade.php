@@ -1,6 +1,6 @@
 <x-layout>
 
-    @include('apartment.validation-errors')
+    @include('booking.validation-errors')
 
     <div class="container my-5">
         <div class="row justify-content-center">

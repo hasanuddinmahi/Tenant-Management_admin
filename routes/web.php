@@ -28,17 +28,13 @@ Route::get('/findme', function () {
 });
 
 Route::get('/maintenance', function () {
-    return view('maintenance.maintenance');
+    return view('maintenance.index');
 });
 
-Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
-Route::get('/booking/create', [BookingController::class, 'create'])->name('booking.create');
-Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
-Route::get('/booking/{booking}', [BookingController::class, 'show'])->name('booking.show');
-Route::get('/booking/{booking}/edit', [BookingController::class, 'edit'])->name('booking.edit');
-Route::put('/booking/{booking}', [BookingController::class, 'update'])->name('booking.update');
-Route::delete('/booking/{booking}/destroy', [BookingController::class, 'destroy'])->name('booking.destroy');
 
 
+
+
+Route::resource('booking', BookingController::class);
 Route::resource('apartment', ApartmentController::class);
 Route::resource('tenant', TenantController::class);
