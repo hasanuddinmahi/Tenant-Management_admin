@@ -5,7 +5,7 @@
     </div>
     <ul class="nav flex-column px-3">
         <li class="nav-item">
-            <a class="nav-link {{ Request::is('/') ? 'active' : '' }}" href="/"><i
+            <a class="nav-link {{ Request::is('dashboard') ? 'active' : '' }}" href="/dashboard"><i
                     class="fa-solid fa-compass"></i><span>Dashboard</span></a>
         </li>
         <li class="nav-item">
@@ -17,8 +17,8 @@
                     class="fa-solid fa-users"></i><span>Tenant</span></a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ Request::is('maintenance*') ? 'active' : '' }}" href="/maintenance"><i
-                    class="fa-solid fa-gears"></i> <span>Maintenance</span></a>
+            <a class="nav-link {{ Request::is('expense*') ? 'active' : '' }}" href="/expense"><i
+                    class="fa-solid fa-gears"></i> <span>Expense</span></a>
         </li>
         <li class="nav-item">
             <a class="nav-link {{ Request::is('apartment*') ? 'active' : '' }}" href="/apartment"><i

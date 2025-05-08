@@ -1,40 +1,43 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ApartmentController;
 use App\Http\Controllers\BookingController;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TenantController;
-use App\Models\Apartment;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
 */
 
-Route::get('/', function () {
-    return view('welcome');
+# Show login form
+Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/', [LoginController::class, 'login']);
+
+# Logout route
+Route::post('/logout', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/');
+})->name('logout');
+
+# All routes below are protected by auth middleware
+Route::middleware('auth')->group(function () {
+
+    Route::get('/dashboard', function () {
+        return view('welcome');
+    })->name('dashboard');
+
+    Route::get('/expense', function () {
+        return view('expense.index');
+    })->name('expense');
+
+    // Resource routes
+    Route::resource('booking', BookingController::class);
+    Route::resource('apartment', ApartmentController::class);
+    Route::resource('tenant', TenantController::class);
 });
-
-Route::get('/findme', function () {
-    return view('Me.findme');
-});
-
-Route::get('/maintenance', function () {
-    return view('maintenance.index');
-});
-
-
-
-
-
-Route::resource('booking', BookingController::class);
-Route::resource('apartment', ApartmentController::class);
-Route::resource('tenant', TenantController::class);
