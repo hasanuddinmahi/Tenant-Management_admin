@@ -165,4 +165,38 @@ class BookingService
             return Redirect::route('booking.index')->with('error', 'Failed to delete booking.');
         }
     }
+
+    /**
+     * Handle marking a booking as paid & unpaid.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function markAsPaid($id)
+    {
+        try {
+            $booking = Booking::findOrFail($id);
+            $booking->payment_status = 'paid';
+            $booking->save();
+
+            return redirect()->back()->with('success', 'Booking marked as paid.');
+        } catch (\Exception $e) {
+            Log::error('Error marking booking as paid: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to mark booking as paid.');
+        }
+    }
+
+    public function markAsUnpaid($id)
+    {
+        try {
+            $booking = Booking::findOrFail($id);
+            $booking->payment_status = 'unpaid';
+            $booking->save();
+
+            return redirect()->back()->with('success', 'Booking marked as unpaid.');
+        } catch (\Exception $e) {
+            Log::error('Error marking booking as unpaid: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to mark booking as unpaid.');
+        }
+    }
 }

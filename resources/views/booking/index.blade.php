@@ -26,18 +26,20 @@
                             <td>{{ $booking->tenant->name }}</td>
                             <td>Tk {{ number_format($booking->apartment->price) }}</td>
                             <td>{{ \Carbon\Carbon::parse($booking->end_date)->format('M d, Y') }}</td>
-                            {{-- <td>
-
+                            <td>
                                 @if ($booking->payment_status === 'unpaid')
                                     <form action="{{ route('bookings.markPaid', $booking->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="btn btn-sm btn-success">Mark as Paid</button>
                                     </form>
                                 @else
-                                    <span class="badge bg-success">Paid</span>
+                                    <form action="{{ route('bookings.markUnpaid', $booking->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-warning">Mark as Unpaid</button>
+                                    </form>
                                 @endif
+                            </td>
 
-                            </td> --}}
                         </tr>
                     @endforeach
                 </tbody>

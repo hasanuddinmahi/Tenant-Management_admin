@@ -94,4 +94,16 @@ class BookingController extends Controller
     {
         return $this->service->handleDestroy($id);
     }
+
+    public function markAsPaid($id)
+    {
+        return $this->service->markAsPaid($id);
+    }
+    public function markAsUnpaid($id)
+    {
+        return $this->service->markAsUnpaid($id);
+    }
+
+
+
 }

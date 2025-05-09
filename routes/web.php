@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ApartmentController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\TenantController;
 
 /*
@@ -28,9 +30,8 @@ Route::post('/logout', function () {
 # All routes below are protected by auth middleware
 Route::middleware('auth')->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('welcome');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+
 
     Route::get('/expense', function () {
         return view('expense.index');
@@ -38,6 +39,11 @@ Route::middleware('auth')->group(function () {
 
     // Resource routes
     Route::resource('booking', BookingController::class);
+    Route::post('/bookings/{id}/mark-paid', [BookingController::class, 'markAsPaid'])->name('bookings.markPaid');
+    Route::post('/bookings/{id}/mark-unpaid', [BookingController::class, 'markAsUnpaid'])->name('bookings.markUnpaid');
+
+
     Route::resource('apartment', ApartmentController::class);
     Route::resource('tenant', TenantController::class);
+    Route::post('/expense', [ExpenseController::class, 'store'])->name('expenses.store');
 });

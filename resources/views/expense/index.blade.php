@@ -7,7 +7,7 @@
                 <h2 class="mb-4 fw-bold text-primary">Expense Side</h2>
 
                 {{-- Start Form Here --}}
-                <form action="#" method="POST" class="needs-validation" novalidate>
+                <form action="{{ route('expenses.store') }}" method="POST" class="needs-validation" novalidate>
                     @csrf
 
                     {{-- Expense Information Section --}}
