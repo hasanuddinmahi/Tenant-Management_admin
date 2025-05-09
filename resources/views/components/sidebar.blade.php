@@ -24,5 +24,9 @@
             <a class="nav-link {{ Request::is('apartment*') ? 'active' : '' }}" href="/apartment"><i
                     class="fa-solid fa-building"></i> <span>Apartment</span></a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link {{ Request::is('user*') ? 'active' : '' }}" href="/user"><i
+                    class="fa-solid fa-user"></i> <span>User</span></a>
+        </li>
     </ul>
 </div>

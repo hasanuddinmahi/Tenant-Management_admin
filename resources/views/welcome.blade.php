@@ -10,7 +10,7 @@
                 <div class="card bg-primary text-white">
                     <div class="card-body">
                         <h5 class="card-title">Total Payments</h5>
-                        <h2 class="card-text">${{ number_format($totalPayments, 2) }}</h2>
+                        <h2 class="card-text">Tk {{ number_format($totalPayments, 2) }}</h2>
                         <p class="card-text"><small>+8% from last month</small></p>
                     </div>
                 </div>
@@ -19,7 +19,7 @@
                 <div class="card bg-success text-white">
                     <div class="card-body">
                         <h5 class="card-title">Total Expenses</h5>
-                        <h2 class="card-text">${{ number_format($totalExpensesAmount, 2) }}</h2>
+                        <h2 class="card-text">Tk {{ number_format($totalExpensesAmount, 2) }}</h2>
                         <p class="card-text"><small>+5% from last month</small></p>
                     </div>
                 </div>
@@ -28,7 +28,7 @@
                 <div class="card bg-warning text-dark">
                     <div class="card-body">
                         <h5 class="card-title">Amount Left</h5>
-                        <h2 class="card-text">${{ number_format($amountLeft, 2) }}</h2>
+                        <h2 class="card-text">Tk {{ number_format($amountLeft, 2) }}</h2>
                         <p class="card-text"><small>Remaining balance</small></p>
                     </div>
                 </div>

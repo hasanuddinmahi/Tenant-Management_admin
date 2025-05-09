@@ -8,6 +8,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\TenantController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,4 +47,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('apartment', ApartmentController::class);
     Route::resource('tenant', TenantController::class);
     Route::post('/expense', [ExpenseController::class, 'store'])->name('expenses.store');
+
+    Route::prefix('user')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('user.index');
+    Route::get('/create', [UserController::class, 'create'])->name('user.create');
+    Route::post('/', [UserController::class, 'store'])->name('user.store');
+    Route::get('/{user}', [UserController::class, 'show'])->name('user.show');
+    Route::get('/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
+    Route::put('/{user}', [UserController::class, 'update'])->name('user.update');
+    Route::delete('/{user}', [UserController::class, 'destroy'])->name('user.destroy');
+});
 });

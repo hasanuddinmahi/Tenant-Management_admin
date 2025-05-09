@@ -57,6 +57,8 @@
     </script>
     <!-- Custom Scripts -->
     <script src="{{ asset('js/sidebar.js') }}"></script>
+    @stack('scripts')
+
 </body>
 
 </html>
